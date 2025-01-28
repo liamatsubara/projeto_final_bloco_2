@@ -14,9 +14,9 @@ export class CategoriaService {
 
     async findAll(): Promise<Categoria[]> {
         return await this.categoriaRepository.find({
-            // relations:{
-            //     produto: true
-            // }
+            relations:{
+                produto: true
+            }
         });
     };
 
@@ -25,9 +25,9 @@ export class CategoriaService {
             where: {
                 id
             },
-            // relations:{
-            //     produto: true
-            // }
+            relations:{
+                produto: true
+            }
         })
 
         if(!categoria)
@@ -36,25 +36,37 @@ export class CategoriaService {
     };
 
     async findByTitulo(titulo: string): Promise<Categoria[]> {
-        return await this.categoriaRepository.find({
+        const categorias = await this.categoriaRepository.find({
             where: {
                 titulo: ILike(`%${titulo}%`)
             },
-            // relations:{
-            //     produto: true
-            // }
-        })
+            relations: {
+                produto: true
+            }
+        });
+    
+        if (!categorias || categorias.length === 0) {
+            throw new HttpException('Categoria não encontrada com o título informado!', HttpStatus.NOT_FOUND);
+        }
+    
+        return categorias;
     };
 
     async findByDescricao(descricao: string): Promise<Categoria[]> {
-        return await this.categoriaRepository.find({
+        const categorias = await this.categoriaRepository.find({
             where: {
                 descricao: ILike(`%${descricao}%`)
             },
-            // relations:{
-            //     produto: true
-            // }
-        })
+            relations: {
+                produto: true
+            }
+        });
+    
+        if (!categorias || categorias.length === 0) {
+            throw new HttpException('Categoria não encontrada com a descrição informada!', HttpStatus.NOT_FOUND);
+        }
+    
+        return categorias;
     };
 
     async create(categoria: Categoria): Promise<Categoria> {
